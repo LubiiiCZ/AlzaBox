@@ -1,12 +1,15 @@
 namespace AlzaBox;
 
-public static class IdentityManagement
+public static class Identity
 {
-    public static void GetToken()
+    public static string Token { get; set; } = string.Empty;
+    private readonly static string _endpoint = "identitymanagement";
+
+    public static bool GetToken()
     {
         TestContext.Out.WriteLine("Getting token...");
 
-        var client = new RestClient("https://identitymanagement.phx-test.alza.cz/connect/token");
+        var client = new RestClient($"https://{_endpoint}.phx-test.alza.cz/connect/token");
         var request = new RestRequest("", Method.Post);
 
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -22,11 +25,13 @@ public static class IdentityManagement
         if (response.Content != null)
         {
             var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(response.Content);
-            TestContext.Out.WriteLine(tokenResponse?.AccessToken);
+            Token = $"Bearer {tokenResponse?.AccessToken}";
+            return true;
         }
         else
         {
             TestContext.Out.WriteLine("Failed to get token.");
+            return false;
         }
     }
 }
