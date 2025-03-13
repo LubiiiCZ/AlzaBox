@@ -21,4 +21,23 @@ public static class Utils
 
         return counter;
     }
+
+    public static void SaveResponse(string response, string filename)
+    {
+        string logFolder = "./../../../Logs";
+        if (!Directory.Exists(logFolder))
+        {
+            Directory.CreateDirectory(logFolder);
+        }
+
+        string filePath = Path.Combine(logFolder, $"{filename}.json");
+
+        using JsonDocument doc = JsonDocument.Parse(response);
+        string formattedJson = JsonSerializer.Serialize(doc.RootElement, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+
+        File.WriteAllText(filePath, formattedJson);
+    }
 }

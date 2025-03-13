@@ -22,6 +22,7 @@ public static class ParcelLockers
 
         if (response.Content != null)
         {
+            Utils.SaveResponse(response.Content, "boxes");
             ParseBoxes(response.Content);
         }
         else
@@ -68,6 +69,7 @@ public static class ParcelLockers
 
         if (response.Content != null)
         {
+            Utils.SaveResponse(response.Content, "reservations");
             ParseReservations(response.Content);
         }
         else
@@ -128,6 +130,7 @@ public static class ParcelLockers
 
             if (response.Content != null)
             {
+                Utils.SaveResponse(response.Content, "newreservation");
                 var status = ParseReservationStatus(response.Content);
                 TestContext.Progress.WriteLine($"Reservation status: {status}");
                 return status;
@@ -144,6 +147,7 @@ public static class ParcelLockers
 
             if (response.Content != null)
             {
+                Utils.SaveResponse(response.Content, "duplicatereservation");
                 var status = ParseDuplicateReservationStatus(response.Content);
                 TestContext.Progress.WriteLine($"Reservation status: {status}");
                 return status;

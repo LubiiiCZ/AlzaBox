@@ -7,6 +7,7 @@ public class Tests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
+        TestContext.Progress.WriteLine("Getting token...");
         Assert.That(Identity.GetToken(), Is.True);
     }
 
@@ -14,6 +15,7 @@ public class Tests
     [Test]
     public void GetBoxesInfo()
     {
+        TestContext.Progress.WriteLine("Getting available boxes...");
         ParcelLockers.GetBoxes();
         Assert.Pass();
     }
@@ -22,6 +24,7 @@ public class Tests
     [Test]
     public void GetReservationsInfo()
     {
+        TestContext.Progress.WriteLine("Getting reservations info...");
         ParcelLockers.GetReservations();
         Assert.Pass();
     }
@@ -30,6 +33,7 @@ public class Tests
     [Test]
     public void SetValidReservation()
     {
+        TestContext.Progress.WriteLine("Making a reservation...");
         var id = Utils.GetIdCounter();
         var ResId = $"DOHNAL_{id}";
         var BarcodeId = $"LD_{id}";
@@ -42,6 +46,7 @@ public class Tests
     [Test]
     public void SetDuplicateReservation()
     {
+        TestContext.Progress.WriteLine("Making a duplicate reservation...");
         var id = Utils.GetIdCounter(false) - 1;
         var ResId = $"DOHNAL_{id}";
         var BarcodeId = $"LD_{id}";
