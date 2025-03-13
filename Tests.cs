@@ -21,4 +21,12 @@ public class Tests
         ParcelLockers.GetBoxes(parameters);
         Assert.Pass();
     }
+
+    //Jaké rezervace byly předvytvořené, do jakých AlzaBoxů, jaký čárový kód má balíček a v jakém jsou stavu?
+    [Test]
+    public void GetReservationsInfo()
+    {
+        ParcelLockers.GetReservations();
+        Assert.Pass();
+    }
 }
