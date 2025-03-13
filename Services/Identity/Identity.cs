@@ -13,10 +13,10 @@ public static class Identity
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddParameter("grant_type", "password");
         request.AddParameter("scope", "konzole_access");
-        request.AddParameter("client_id", "hiring7_client");
-        request.AddParameter("client_secret", "Ww*5dIm&P13d0*b7");
-        request.AddParameter("username", "Partner Hiring7");
-        request.AddParameter("password", "1hj1T!yXw1cKXmVy");
+        request.AddParameter("client_id", Config.ClientId);
+        request.AddParameter("client_secret", Config.ClientSecret);
+        request.AddParameter("username", Config.Username);
+        request.AddParameter("password", Config.Password);
 
         var response = client.Execute(request);
 

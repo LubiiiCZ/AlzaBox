@@ -3,6 +3,7 @@
 [TestFixture]
 public class Tests
 {
+    //Získání tokenu pro IdentityManagement
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
