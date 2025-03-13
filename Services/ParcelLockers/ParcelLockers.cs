@@ -109,4 +109,72 @@ public static class ParcelLockers
             }
         }
     }
+
+    public static void PostReservation(string resId, string barcodeId)
+    {
+        var client = new RestClient($"https://{_service}.alza.cz/parcel-lockers/v2/reservation");
+        var request = new RestRequest("", Method.Post);
+        request.AddHeader("Content-Type", "application/json");
+        request.AddHeader("Authorization", Identity.Token);
+        request.AddJsonBody(CreateReservationBody(resId, barcodeId));
+
+        var response = client.Execute(request);
+
+        if (response.Content != null)
+        {
+            TestContext.Progress.WriteLine(response.Content);
+        }
+        else
+        {
+            TestContext.Progress.WriteLine("Failed to set reservation.");
+        }
+
+        Assert.That(response.IsSuccessful, Is.True);
+    }
+
+    private static string CreateReservationBody(string resId, string barcodeId)
+    {
+        DateTime startDate = DateTime.UtcNow;
+        DateTime expirationDate = startDate.AddDays(3);
+
+        var body = new
+        {
+            data = new
+            {
+                reservation = new
+                {
+                    id = resId,
+                    attributes = new
+                    {
+                        startReservationDate = startDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        expirationDate = expirationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        packages = new[]
+                        {
+                            new
+                            {
+                                depth = 3.5,
+                                height = 2.8,
+                                width = 4.2,
+                                barcode = barcodeId,
+                                requirements = new
+                                {
+                                    maxSlotSize = "M"
+                                }
+                            }
+                        },
+                        type = "TIME"
+                    },
+                    relationships = new
+                    {
+                        box = new
+                        {
+                            id = 7873
+                        }
+                    }
+                }
+            }
+        };
+
+        return JsonSerializer.Serialize(body, new JsonSerializerOptions { WriteIndented = false });
+    }
 }

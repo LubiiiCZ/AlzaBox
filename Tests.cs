@@ -25,4 +25,34 @@ public class Tests
         ParcelLockers.GetReservations();
         Assert.Pass();
     }
+
+    //Napsat testy, které zkusí vytvořit rezervaci a ověří, zda byla rezervace správně vytvořena nebo správně nevytvořena
+    [Test]
+    public void SetValidReservation()
+    {
+        var id = GetIdCounter();
+        var ResId = $"DOHNAL_{id}";
+        var BarcodeId = $"LD_{id}";
+        ParcelLockers.PostReservation(ResId, BarcodeId);
+        Assert.Pass();
+    }
+
+    private static int GetIdCounter()
+    {
+        string filePath = "persistId.txt";
+        int counter = 1;
+
+        if (File.Exists(filePath))
+        {
+            string content = File.ReadAllText(filePath);
+            if (int.TryParse(content, out int lastValue))
+            {
+                counter = lastValue + 1;
+            }
+        }
+
+        File.WriteAllText(filePath, counter.ToString());
+
+        return counter;
+    }
 }
