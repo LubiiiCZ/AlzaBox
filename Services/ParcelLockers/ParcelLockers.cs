@@ -110,8 +110,10 @@ public static class ParcelLockers
         }
     }
 
-    public static void PostReservation(string resId, string barcodeId)
+    public static string PostReservation(string resId, string barcodeId, bool duplicate = false)
     {
+        TestContext.Progress.WriteLine($"Creating reservation for: {resId} - {barcodeId}");
+
         var client = new RestClient($"https://{_service}.alza.cz/parcel-lockers/v2/reservation");
         var request = new RestRequest("", Method.Post);
         request.AddHeader("Content-Type", "application/json");
@@ -120,16 +122,38 @@ public static class ParcelLockers
 
         var response = client.Execute(request);
 
-        if (response.Content != null)
+        if (!duplicate)
         {
-            TestContext.Progress.WriteLine(response.Content);
+            Assert.That(response.IsSuccessful, Is.True);
+
+            if (response.Content != null)
+            {
+                var status = ParseReservationStatus(response.Content);
+                TestContext.Progress.WriteLine($"Reservation status: {status}");
+                return status;
+            }
+            else
+            {
+                TestContext.Progress.WriteLine("Failed to set reservation.");
+                return "FAILED";
+            }
         }
         else
         {
-            TestContext.Progress.WriteLine("Failed to set reservation.");
-        }
+            Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Conflict));
 
-        Assert.That(response.IsSuccessful, Is.True);
+            if (response.Content != null)
+            {
+                var status = ParseDuplicateReservationStatus(response.Content);
+                TestContext.Progress.WriteLine($"Reservation status: {status}");
+                return status;
+            }
+            else
+            {
+                TestContext.Progress.WriteLine("Failed to set reservation.");
+                return "FAILED";
+            }
+        }
     }
 
     private static string CreateReservationBody(string resId, string barcodeId)
@@ -176,5 +200,31 @@ public static class ParcelLockers
         };
 
         return JsonSerializer.Serialize(body, new JsonSerializerOptions { WriteIndented = false });
+    }
+
+    private static string ParseReservationStatus(string response)
+    {
+        using JsonDocument doc = JsonDocument.Parse(response);
+        JsonElement root = doc.RootElement;
+
+        if (root.TryGetProperty("data", out JsonElement dataElement))
+        {
+            return dataElement.GetProperty("attributes").GetProperty("status").GetString() ?? "Unknown Status";
+        }
+
+        return "Unknown Status";
+    }
+
+    private static string ParseDuplicateReservationStatus(string response)
+    {
+        using JsonDocument doc = JsonDocument.Parse(response);
+        JsonElement root = doc.RootElement;
+
+        if (root.TryGetProperty("errors", out JsonElement errorsElement))
+        {
+            return errorsElement[0].GetProperty("extensions").GetProperty("code").GetString() ?? "Unknown Status";
+        }
+
+        return "Unknown Status";
     }
 }

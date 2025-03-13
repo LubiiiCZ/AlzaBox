@@ -30,29 +30,23 @@ public class Tests
     [Test]
     public void SetValidReservation()
     {
-        var id = GetIdCounter();
+        var id = Utils.GetIdCounter();
         var ResId = $"DOHNAL_{id}";
         var BarcodeId = $"LD_{id}";
-        ParcelLockers.PostReservation(ResId, BarcodeId);
-        Assert.Pass();
+
+        var status = ParcelLockers.PostReservation(ResId, BarcodeId);
+        Assert.That(status, Is.EqualTo("RESERVED"));
     }
 
-    private static int GetIdCounter()
+    //Duplicitní rezervace - stejné ID rezervace a čárového kódu
+    [Test]
+    public void SetDuplicateReservation()
     {
-        string filePath = "persistId.txt";
-        int counter = 1;
+        var id = Utils.GetIdCounter(false) - 1;
+        var ResId = $"DOHNAL_{id}";
+        var BarcodeId = $"LD_{id}";
 
-        if (File.Exists(filePath))
-        {
-            string content = File.ReadAllText(filePath);
-            if (int.TryParse(content, out int lastValue))
-            {
-                counter = lastValue + 1;
-            }
-        }
-
-        File.WriteAllText(filePath, counter.ToString());
-
-        return counter;
+        var status = ParcelLockers.PostReservation(ResId, BarcodeId, true);
+        Assert.That(status, Is.EqualTo("CONFLICT"));
     }
 }
