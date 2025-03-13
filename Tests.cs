@@ -13,12 +13,7 @@ public class Tests
     [Test]
     public void GetBoxesInfo()
     {
-        List<string> parameters = [
-            "name", "available", "address", "description",
-            //"openingHours", "photos", "slots", "occupancy", "deliveryPin", "gps",
-        ];
-
-        ParcelLockers.GetBoxes(parameters);
+        ParcelLockers.GetBoxes();
         Assert.Pass();
     }
 
